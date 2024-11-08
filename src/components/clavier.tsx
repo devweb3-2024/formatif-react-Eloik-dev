@@ -5,14 +5,22 @@ interface ClavierProps {
   essaiCourant: string;
   setEssaiCourant: React.Dispatch<React.SetStateAction<string>>;
   onEnter: () => void;
-  inactif: boolean;
+  onRestart: () => void;
+  finPartie: boolean;
 }
 
+/**
+ * ER: Ajout du callback onRestart afin de redémarrer la partie
+ *     Renommé inactif pour finPartie pour la consistence
+ *     Ajout d'un bouton de redémarrage affiché conditionnellement
+ *      
+ */
 const Clavier: React.FC<ClavierProps> = ({
   essaiCourant,
   setEssaiCourant,
   onEnter,
-  inactif,
+  onRestart,
+  finPartie,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -21,6 +29,9 @@ const Clavier: React.FC<ClavierProps> = ({
     }
   };
 
+  /**
+   * ER: Retirement de fullWidth car causait des problèmes de CSS
+   */
   return (
     <Box sx={{ marginTop: 2, display: 'flex', gap: 2 }}>
       <TextField
@@ -28,13 +39,18 @@ const Clavier: React.FC<ClavierProps> = ({
         variant="outlined"
         value={essaiCourant}
         onChange={handleChange}
-        disabled={inactif}
+        disabled={finPartie}
         slotProps={{ htmlInput: { style: { textTransform: 'uppercase' } } }}
-        fullWidth
       />
-      <Button variant="contained" onClick={onEnter} disabled={inactif}>
-        Entrer
-      </Button>
+      {finPartie ?
+        <Button variant="contained" onClick={onRestart}>
+          Redémarrer
+        </Button>
+        :
+        <Button variant="contained" onClick={onEnter}>
+          Entrer
+        </Button>
+      }
     </Box>
   );
 };

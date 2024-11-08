@@ -7,12 +7,15 @@ interface GrilleMotsProps {
   motCible: string;
 }
 
+/**
+ * ER: Augmentation du nombre de lignes de 5 à 6 
+ */
 const GrilleMot: React.FC<GrilleMotsProps> = ({
   essais,
   essaiCourant,
   motCible,
 }) => {
-  const rows = Array.from({ length: 5 }, (_, i) => {
+  const rows = Array.from({ length: 6 }, (_, i) => {
     const guess =
       essais[i] || (i === essais.length ? essaiCourant.toUpperCase() : '');
     return guess.padEnd(5, ' ');
@@ -25,15 +28,19 @@ const GrilleMot: React.FC<GrilleMotsProps> = ({
     return 'grey.500';
   };
 
+  /**
+   * ER: Retirement de xs={2.4}, et ajout de width: 60 car causaient des problèmes de CSS
+   */
   return (
     <Grid container spacing={1} sx={{ marginTop: 2 }}>
       {rows.map((row, rowIndex) => (
         <Grid container item spacing={1} key={rowIndex}>
           {row.split('').map((letter, index) => (
-            <Grid item xs={2.4} key={index}>
+            <Grid item key={index}>
               <Paper
                 sx={{
                   height: 60,
+                  width: 60,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

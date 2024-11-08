@@ -2042,7 +2042,23 @@ export const listeMots = [
   'zones',
 ];
 
+/**
+ * ER: Changement d'une addition vers le produit
+ *     Utilisation de la fonction de formattage au retour du mot
+ */
 export const obtenirMotAleatoire = () => {
-  const indexAleatoire = Math.floor(Math.random() + listeMots.length);
-  return listeMots[indexAleatoire].toUpperCase();
+  const indexAleatoire = Math.floor(Math.random() * listeMots.length);
+  const motAleatoire = listeMots[indexAleatoire].toUpperCase();
+  return formatterMot(motAleatoire);
+};
+
+/**
+ * ER: Ajout d'une fonction permettant le formattage de mots afin de retirer les accents et rendre en majuscules
+ * 
+ * @link https://www.30secondsofcode.org/js/s/remove-accents Source du REGEX pour retirer les accents
+ * @param {String} mot Le mot a formatter
+ * @returns {string} Le mot formatté
+ */
+export const formatterMot = (mot: string): string => {
+  return mot.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 };

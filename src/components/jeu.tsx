@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Snackbar, Alert } from '@mui/material';
 import GrilleMot from './grillemots';
-import { obtenirMotAleatoire, listeMots } from '../utils/mots';
+import { obtenirMotAleatoire, listeMots, formatterMot } from '../utils/mots';
 import Clavier from './clavier';
 
 const Jeu: React.FC = () => {
@@ -41,6 +41,9 @@ const Jeu: React.FC = () => {
     }
   };
 
+  /**
+   * ER: Réparation du formattage des mots et de la condition de vérification du mot dans la liste 
+   */
   const handleSoumettreEssai = () => {
     if (essaiCourant.length !== 5) {
       setMessage({
@@ -49,22 +52,39 @@ const Jeu: React.FC = () => {
       });
       return;
     }
-    if (
-      !listeMots.includes(
-        essaiCourant.charAt(0).toUpperCase() +
-          essaiCourant.slice(1).toLowerCase()
-      )
-    ) {
+
+    const essaiCourantFormatte = essaiCourant.normalize().toUpperCase();
+    const motListe: string | undefined = listeMots.find(mot => {
+      return formatterMot(mot) == essaiCourantFormatte
+    })
+
+    if (motListe === undefined || !listeMots.includes(motListe)) {
       setMessage({
         text: "Ce mot n'est pas dans la liste.",
         severity: 'error',
       });
       return;
     }
+
     setEssais([...essais, essaiCourant.toUpperCase()]);
     setEssaiCourant('');
   };
 
+  /**
+   * ER: Ajout de cette fonction pour pouvoir redémarrer la partie
+   */
+  const handleRedemarrer = () => {
+    setMotCible(obtenirMotAleatoire());
+    setEssais([]);
+    setEssaiCourant('');
+    setFinPartie(false);
+    setMessage(null);
+  };
+
+  /**
+   * ER: Ajout du callback onRestart à la composante clavier
+   * /   Changement du nom de variable de inactif vers finPartie pour la consistence
+   */
   return (
     <Container maxWidth="sm">
       <GrilleMot
@@ -76,7 +96,8 @@ const Jeu: React.FC = () => {
         essaiCourant={essaiCourant}
         setEssaiCourant={setEssaiCourant}
         onEnter={handleSoumettreEssai}
-        inactif={finPartie}
+        onRestart={handleRedemarrer}
+        finPartie={finPartie}
       />
       {message && (
         <Snackbar open autoHideDuration={6000} onClose={() => setMessage(null)}>
